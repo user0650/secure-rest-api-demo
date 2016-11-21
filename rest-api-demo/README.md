@@ -1,5 +1,5 @@
 # 概述
-本教程将演示如何用Spring Boot开发一个RESTful风格的应用。
+本教程将演示如何用Spring Boot开发一个RESTful风格的应用。  
 本示例基于实际业务需求，开发一个Account管理系统（这是一个很常见、很典型的需求）。
     
 # 开始
@@ -131,13 +131,16 @@
     ```
     1. 数据源相关配置项，根据实际情况修改此配置项
     2. hibernate、jpa配置，用spring.jpa.hibernate.ddl-auto=update来配置自动执行DDL操作，且为更新操作，即系统启动时自动根据实体类属性更新数据库表结构
-- 创建数据库
+- 创建数据库  
+
     ```
     略
     ```
-    - 一般安装完MySQL自带test库
-- 启动应用
-    - 查看数据，发现已经自动建立了t_account数据表
+    一般安装完MySQL自带test库
+- 启动应用  
+    
+    查看数据，发现已经自动建立了t_account数据表  
+    
 - 添加Account
     ```
     curl -v -X POST -H "Content-Type: application/json" http://localhost:8010/api/accounts/add -d '{"username": "zhangsan", "password": "1", "email": "zhangsan@example.com", "firstName": "zhang", "lastName": "san"}'
@@ -161,7 +164,8 @@
     * Connection #0 to host localhost left intact
     {"id":1,"username":"zhangsan","email":"zhangsan@example.com","firstName":"zhang","lastName":"san","age":null,"gender":null}
     ```
-    - 工作正常！
+    工作正常
+    
 - 查看Account
     ```
     curl -v -X GET http://localhost:8010/api/accounts/zhangsan
@@ -182,10 +186,11 @@
     * Connection #0 to host localhost left intact
     {"id":1,"username":"zhangsan","email":"zhangsan@example.com","firstName":"zhang","lastName":"san","age":null,"gender":null}
     ```
-    - 工作正常！
+    工作正常  
     
 # 进阶
-- 错误处理
+- 错误处理  
+
     尝试添加一个已经存在的用户，让后台抛出异常
     ```
     curl -v -X POST -H "Content-Type: application/json" http://localhost:8010/api/accounts/add -d '{"username": "zhangsan", "password": "1", "email": "zhangsan@example.com", "firstName": "zhang", "lastName": "san"}'
@@ -210,8 +215,8 @@
     * Closing connection 0
     {"timestamp":1479656189353,"status":500,"error":"Internal Server Error","exception":"java.lang.IllegalArgumentException","message":"用户已经存在！","path":"/api/accounts/add"}
     ```
-    我们发现返回HTTP的状态为500。通常，对于参数错误，我们希望返回状态为400，这需要在服务端做修改：
-    - 添加Controller通知类
+    我们发现返回HTTP的状态为500。通常，对于参数错误，我们希望返回状态为400，这需要在服务端做修改：  
+    添加Controller通知类
     ```
     @ControllerAdvice
     public class AccountRestControllerAdvice { // 1
@@ -252,8 +257,10 @@
     这时，返回HTTP状态码已经变成了400。
     
 # 扩展
-- 更新Account
-    我们继续修改AccountController，添加Account的更新操作接口
+- 更新Account  
+
+    我们继续修改AccountController，添加Account的更新操作接口  
+    
     ```
     ...
     @RequestMapping(method = RequestMethod.PUT, value = "/update")
@@ -339,3 +346,5 @@
     { [123 bytes data]
     {"id":1,"username":"zhangsan","email":"zhangsan@example.com","firstName":"zhang","lastName":"san","age":25,"gender":1}
     ```
+    
+    
