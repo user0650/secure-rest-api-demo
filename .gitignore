@@ -2,5 +2,7 @@
 .idea
 *.iml
 
-rest-api-demo/.mvn
-rest-api-demo/target
+/rest-api-demo/.mvn/
+/rest-api-demo/target/
+/hateoas-api-demo/.mvn/
+/hateoas-api-demo/target/
