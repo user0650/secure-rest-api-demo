@@ -48,7 +48,7 @@
     
         private String email;
         private String firstName;
-        private String lashName;
+        private String lastName;
         private Integer age;
         private Byte gender;
     
@@ -140,13 +140,13 @@
     - 查看数据，发现已经自动建立了t_account数据表
 - 添加Account
     ```
-    curl -v -X POST -H "Content-Type: application/json" http://localhost:8080/api/accounts/add -d '{"username": "zhangsan", "password": "1", "email": "zhangsan@example.com", "firstName": "zhang", "lastName": "san"}'
+    curl -v -X POST -H "Content-Type: application/json" http://localhost:8010/api/accounts/add -d '{"username": "zhangsan", "password": "1", "email": "zhangsan@example.com", "firstName": "zhang", "lastName": "san"}'
     
     Note: Unnecessary use of -X or --request, POST is already inferred.
     *   Trying ::1...
-    * Connected to localhost (::1) port 8080 (#0)
+    * Connected to localhost (::1) port 8010 (#0)
     > POST /api/accounts/add HTTP/1.1
-    > Host: localhost:8080
+    > Host: localhost:8010
     > User-Agent: curl/7.49.1
     > Accept: */*
     > Content-Type: application/json
@@ -159,18 +159,18 @@
     < Date: Sun, 20 Nov 2016 15:29:15 GMT
     <
     * Connection #0 to host localhost left intact
-    {"id":1,"username":"zhangsan","email":"zhangsan@example.com","firstName":"zhang","lashName":null,"age":null,"gender":null}
+    {"id":1,"username":"zhangsan","email":"zhangsan@example.com","firstName":"zhang","lastName":"san","age":null,"gender":null}
     ```
     - 工作正常！
 - 查看Account
     ```
-    curl -v -X GET http://localhost:8080/api/accounts/zhangsan
+    curl -v -X GET http://localhost:8010/api/accounts/zhangsan
     
     Note: Unnecessary use of -X or --request, GET is already inferred.
     *   Trying ::1...
-    * Connected to localhost (::1) port 8080 (#0)
+    * Connected to localhost (::1) port 8010 (#0)
     > GET /api/accounts/zhangsan HTTP/1.1
-    > Host: localhost:8080
+    > Host: localhost:8010
     > User-Agent: curl/7.49.1
     > Accept: */*
     >
@@ -180,7 +180,7 @@
     < Date: Sun, 20 Nov 2016 15:32:13 GMT
     <
     * Connection #0 to host localhost left intact
-    {"id":1,"username":"zhangsan","email":"zhangsan@example.com","firstName":"zhang","lashName":null,"age":null,"gender":null}
+    {"id":1,"username":"zhangsan","email":"zhangsan@example.com","firstName":"zhang","lastName":"san","age":null,"gender":null}
     ```
     - 工作正常！
     
@@ -188,13 +188,13 @@
 - 错误处理
     尝试添加一个已经存在的用户，让后台抛出异常
     ```
-    curl -v -X POST -H "Content-Type: application/json" http://localhost:8080/api/accounts/add -d '{"username": "zhangsan", "password": "1", "email": "zhangsan@example.com", "firstName": "zhang", "lastName": "san"}'
+    curl -v -X POST -H "Content-Type: application/json" http://localhost:8010/api/accounts/add -d '{"username": "zhangsan", "password": "1", "email": "zhangsan@example.com", "firstName": "zhang", "lastName": "san"}'
     
     Note: Unnecessary use of -X or --request, POST is already inferred.
     *   Trying ::1...
-    * Connected to localhost (::1) port 8080 (#0)
+    * Connected to localhost (::1) port 8010 (#0)
     > POST /api/accounts/add HTTP/1.1
-    > Host: localhost:8080
+    > Host: localhost:8010
     > User-Agent: curl/7.49.1
     > Accept: */*
     > Content-Type: application/json
@@ -228,13 +228,13 @@
     3. 最终需要返回给前端的异常对象
     重新启动服务，添加已存在用户：
     ```
-    curl -v -X POST -H "Content-Type: application/json" t:8080/api/accounts/add -d '{"username": "zhangsan", "password": "1", "email": "zhangsan@example.com", "firstName": "zhang", "lastName": "san"}'
+    curl -v -X POST -H "Content-Type: application/json" http://localhost:8010/api/accounts/add -d '{"username": "zhangsan", "password": "1", "email": "zhangsan@example.com", "firstName": "zhang", "lastName": "san"}'
     
     Note: Unnecessary use of -X or --request, POST is already inferred.
     *   Trying ::1...
-    * Connected to localhost (::1) port 8080 (#0)
+    * Connected to localhost (::1) port 8010 (#0)
     > POST /api/accounts/add HTTP/1.1
-    > Host: localhost:8080
+    > Host: localhost:8010
     > User-Agent: curl/7.49.1
     > Accept: */*
     > Content-Type: application/json
@@ -249,4 +249,93 @@
     <
     ...
     ```
-    这时，返回HTTP状态码已经变成了400
+    这时，返回HTTP状态码已经变成了400。
+    
+# 扩展
+- 更新Account
+    我们继续修改AccountController，添加Account的更新操作接口
+    ```
+    ...
+    @RequestMapping(method = RequestMethod.PUT, value = "/update")
+    public Account update(@RequestBody Account account) { // 9
+
+        Account me = accountRepository.findByUsername(account.getUsername());
+        if(me == null){
+            throw new IllegalArgumentException("用户不存在！");
+        }
+
+        me.setPassword(account.getPassword());
+        me.setEmail(account.getEmail());
+        me.setFirstName(account.getFirstName());
+        me.setLastName(account.getLastName());
+        me.setAge(account.getAge());
+        me.setGender(account.getGender());
+
+        me = accountRepository.save(me); // 10
+
+        return me;
+
+    }
+    ...
+    ```
+    9. 我们使用PUT请求来进行更新操作
+    10. 更新对象并保存
+- 删除Account
+    继续修改AccountController，添加Account的删除操作接口
+    ```
+    ...
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{username}")
+    public Account delete(@PathVariable String username) { // 11
+
+        Account account = accountRepository.findByUsername(username);
+        if(account == null){
+            throw new IllegalArgumentException("用户不存在！");
+        }
+
+        accountRepository.delete(account); // 12
+
+        return account;
+    }
+    ...
+    ```
+    11. 用DELETE请求处理删除操作
+    12. 删除对象
+- 测试更新和删除
+    ```
+    curl -v -X PUT -H "Content-Type: application/json" http://localhost:8010/api/accounts/update -d '{"username": "zhangsan", "password": "1", "email": "zhangsan@example.com", "firstName": "zhang", "lastName": "san", "age": 25, "gender": 1}'
+    
+    Connected to localhost (::1) port 8010 (#0)
+    > PUT /api/accounts/update HTTP/1.1
+    > Host: localhost:8010
+    > User-Agent: curl/7.49.1
+    > Accept: */*
+    > Content-Type: application/json
+    > Content-Length: 139
+    >
+    } [139 bytes data]
+    * upload completely sent off: 139 out of 139 bytes
+    < HTTP/1.1 200
+    < Content-Type: application/json;charset=UTF-8
+    < Transfer-Encoding: chunked
+    < Date: Mon, 21 Nov 2016 03:14:21 GMT
+    <
+    {"id":1,"username":"zhangsan","email":"zhangsan@example.com","firstName":"zhang","lastName":"san","age":25,"gender":1}
+    ```
+    
+    ```
+    curl -v -X DELETE http://localhost:8010/api/accounts/zhangsan
+    
+    Connected to localhost (::1) port 8010 (#0)
+    > DELETE /api/accounts/zhangsan HTTP/1.1
+    > Host: localhost:8010
+    > User-Agent: curl/7.49.1
+    > Accept: */*
+    >
+    < HTTP/1.1 200
+    < Content-Type: application/json;charset=UTF-8
+    < Transfer-Encoding: chunked
+    < Date: Mon, 21 Nov 2016 03:15:20 GMT
+    <
+    { [123 bytes data]
+    {"id":1,"username":"zhangsan","email":"zhangsan@example.com","firstName":"zhang","lastName":"san","age":25,"gender":1}
+    ```
