@@ -287,7 +287,8 @@
     ```
     9. 我们使用PUT请求来进行更新操作
     10. 更新对象并保存
-- 删除Account
+- 删除Account  
+
     继续修改AccountController，添加Account的删除操作接口
     ```
     ...
