@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/accounts")
 public class AccountController { // 1
 
-
     @Autowired
     private AccountRepository accountRepository; // 2
-
 
     @RequestMapping(method = RequestMethod.POST, value = "/add")
     public Account add(@RequestBody Account account){ // 3
@@ -37,6 +35,40 @@ public class AccountController { // 1
         if(account == null){
             throw new IllegalArgumentException("用户不存在！");
         }
+
+        return account;
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/update")
+    public Account update(@RequestBody Account account) { // 9
+
+        Account me = accountRepository.findByUsername(account.getUsername());
+        if(me == null){
+            throw new IllegalArgumentException("用户不存在！");
+        }
+
+        me.setPassword(account.getPassword());
+        me.setEmail(account.getEmail());
+        me.setFirstName(account.getFirstName());
+        me.setLastName(account.getLastName());
+        me.setAge(account.getAge());
+        me.setGender(account.getGender());
+
+        me = accountRepository.save(me); // 10
+
+        return me;
+
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{username}")
+    public Account delete(@PathVariable String username) { // 11
+
+        Account account = accountRepository.findByUsername(username);
+        if(account == null){
+            throw new IllegalArgumentException("用户不存在！");
+        }
+
+        accountRepository.delete(account); // 12
 
         return account;
     }

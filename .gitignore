@@ -1,4 +1,6 @@
 # Created by .ignore support plugin (hsz.mobi)
 .idea
-.mvn
 *.iml
+
+rest-api-demo/.mvn
+rest-api-demo/target

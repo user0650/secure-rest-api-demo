@@ -23,19 +23,19 @@ public class Account { // 1
 
     private String email;
     private String firstName;
-    private String lashName;
+    private String lastName;
     private Integer age;
     private Byte gender;
 
     public Account() {
     }
 
-    public Account(String username, String password, String email, String firstName, String lashName, Integer age, Byte gender) {
+    public Account(String username, String password, String email, String firstName, String lastName, Integer age, Byte gender) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.firstName = firstName;
-        this.lashName = lashName;
+        this.lastName = lastName;
         this.age = age;
         this.gender = gender;
     }
@@ -80,12 +80,12 @@ public class Account { // 1
         this.firstName = firstName;
     }
 
-    public String getLashName() {
-        return lashName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLashName(String lashName) {
-        this.lashName = lashName;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public Integer getAge() {
@@ -112,7 +112,7 @@ public class Account { // 1
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", firstName='" + firstName + '\'' +
-                ", lashName='" + lashName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", age=" + age +
                 ", gender=" + gender +
                 '}';
